@@ -1,3 +1,6 @@
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, User, UserPlus, Lock, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { authService } from '../../lib/authService';
