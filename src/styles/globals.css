@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-primary: #0a0a0f;
+    --bg-secondary: #111118;
+    --bg-card: #16161f;
+    --bg-glass: rgba(255, 255, 255, 0.04);
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-accent: rgba(99, 102, 241, 0.4);
+    --text-primary: #f0f0ff;
+    --text-secondary: #8b8ba7;
+    --text-muted: #4a4a6a;
+    --accent-primary: #6366f1;    /* Indigo */
+    --accent-secondary: #8b5cf6;  /* Purple */
+    --accent-green: #10b981;
+    --accent-red: #ef4444;
+    --accent-amber: #f59e0b;
+    --gradient-primary: linear-gradient(135deg, #6366f1, #8b5cf6);
+    --gradient-card: linear-gradient(145deg, rgba(99,102,241,0.1), rgba(139,92,246,0.05));
+    --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.15);
+    --radius-card: 16px;
+    --radius-btn: 10px;
+    --perspective: 1000px;
+  }
+
+  [data-theme="light"] {
+    --bg-primary: #f8f8ff;
+    --bg-secondary: #ffffff;
+    --bg-card: #ffffff;
+    --bg-glass: rgba(0,0,0,0.03);
+    --border-subtle: rgba(0,0,0,0.08);
+    --text-primary: #0a0a1a;
+    --text-secondary: #4a4a7a;
+    --text-muted: #9090b0;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Syne', sans-serif;
+  }
+}
+
+@layer components {
+  .glass-card {
+    background: var(--bg-glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-card);
+    transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.3s ease;
+    box-shadow: var(--shadow-glow);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgba(255, 255, 255, 0.05),
+      transparent
+    );
+    transform: skewX(-25deg);
+    transition: 0.5s;
+    pointer-events: none;
+  }
+
+  .glass-card:hover::before {
+    left: 150%;
+  }
+
+  .perspective-container {
+    perspective: var(--perspective);
+  }
+}

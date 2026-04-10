@@ -1,0 +1,17 @@
+{
+  "customUsers": [
+    {
+      "id": "746e84a0-a1f7-443e-b463-5a1f87a15332",
+      "passwordHash": "$2b$10$RFYocldrJeqbcrOgpcGMdu6rfyVE5A7HFozAGjqkqGU53rzUBHJli",
+      "email": "jayashree122005@gmail.com",
+      "createdAt": 1775279622265,
+      "password": "Jaya@123"
+    },
+    {
+      "passwordHash": "$2b$10$gfzadlWz3Tb1g3HNaCzG8ezYeRKJ7GK00lg5oK7kBCLKIt6vGeuWG",
+      "email": "mohameedyaseen2005@gmail.com",
+      "createdAt": 1775234327294,
+      "id": "11d31b22-534d-4daa-b2a6-029836da88eb"
+    }
+  ]
+}
