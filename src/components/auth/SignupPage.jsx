@@ -24,9 +24,20 @@ export default function SignupPage() {
 
     setIsSubmitting(true);
     try {
+      // Save local mock user offline
+      const mockUsers = JSON.parse(localStorage.getItem('interview_ai_mock_users') || '[]');
+      const userIndex = mockUsers.findIndex(u => u.email === email);
+      if (userIndex === -1) {
+        mockUsers.push({ email, name, password, id: `mock-${Date.now()}` });
+      } else {
+        mockUsers[userIndex] = { ...mockUsers[userIndex], name, password };
+      }
+      localStorage.setItem('interview_ai_mock_users', JSON.stringify(mockUsers));
+      localStorage.setItem('last_signup_email', email);
+
       await authService.signup(email, password, name);
       setShowOTP(true);
-      toast.success('Magic code sent to your email!');
+      toast.success('OTP sent to your email!');
     } catch (err) {
       toast.error(err.message || "Signup failed.");
     } finally {

@@ -3,9 +3,11 @@ import axios from 'axios';
 // ─── Provider config ──────────────────────────────────────────────────────────
 const GROQ_KEY    = import.meta.env.VITE_GROQ_API_KEY;
 const GEMINI_KEY  = import.meta.env.VITE_GEMINI_API_KEY;
+const KIMI_KEY    = import.meta.env.VITE_KIMI_API_KEY;
 
 const GROQ_ENDPOINT   = 'https://api.groq.com/openai/v1/chat/completions';
 const GEMINI_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
+const KIMI_ENDPOINT   = 'https://integrate.api.nvidia.com/v1/chat/completions';
 
 // ─── In-memory response cache (10 min TTL) ────────────────────────────────────
 const responseCache = new Map();
@@ -113,6 +115,31 @@ async function callGemini(prompt) {
   return extractJSON(text);
 }
 
+// ─── Kimi (NVIDIA NIM) call ───────────────────────────────────────────────────
+async function callKimi(prompt) {
+  if (!KIMI_KEY) throw new Error('NO_KIMI_KEY');
+
+  const response = await axios.post(
+    KIMI_ENDPOINT,
+    {
+      model: 'meta/llama-3.1-405b-instruct',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are an expert AI interviewer. Always respond with valid, strict JSON only. No markdown, no explanation.',
+        },
+        { role: 'user', content: prompt },
+      ],
+      temperature: 0.2,
+      max_tokens: 2048,
+    },
+    { headers: { Authorization: `Bearer ${KIMI_KEY}`, 'Content-Type': 'application/json' } }
+  );
+
+  const text = response.data.choices[0].message.content;
+  return extractJSON(text);
+}
+
 // ─── Unified call with provider cascade ──────────────────────────────────────
 function isQuotaError(error) {
   const status = error.response?.status;
@@ -121,10 +148,25 @@ function isQuotaError(error) {
 }
 
 async function callAI(prompt) {
-  // 1️⃣ Try Groq first (generous free tier)
+  // 1️⃣ Try Kimi (NVIDIA) first as requested/named
+  if (KIMI_KEY) {
+    try {
+      console.log('[AI] Using Kimi (primary)');
+      return await callKimi(prompt);
+    } catch (err) {
+      if (isQuotaError(err)) {
+        console.warn('[AI] Kimi quota hit, falling back to Groq...');
+        window.dispatchEvent(new CustomEvent('ai-provider-switch', { detail: { from: 'Kimi', to: 'Groq' } }));
+      } else if (err.message !== 'NO_KIMI_KEY') {
+        console.error('[AI] Kimi error:', err.response?.data || err.message);
+      }
+    }
+  }
+
+  // 2️⃣ Try Groq second
   if (GROQ_KEY) {
     try {
-      console.log('[AI] Using Groq (primary)');
+      console.log('[AI] Using Groq (secondary)');
       return await callGroq(prompt);
     } catch (err) {
       if (isQuotaError(err)) {
@@ -132,12 +174,11 @@ async function callAI(prompt) {
         window.dispatchEvent(new CustomEvent('ai-provider-switch', { detail: { from: 'Groq', to: 'Gemini' } }));
       } else if (err.message !== 'NO_GROQ_KEY') {
         console.error('[AI] Groq error:', err.response?.data || err.message);
-        // Still try Gemini as fallback
       }
     }
   }
 
-  // 2️⃣ Fall back to Gemini
+  // 3️⃣ Fall back to Gemini
   if (GEMINI_KEY) {
     try {
       console.log('[AI] Using Gemini (fallback)');
@@ -146,7 +187,7 @@ async function callAI(prompt) {
       if (isQuotaError(err)) {
         console.error('[AI] Gemini quota also exceeded.');
         window.dispatchEvent(new CustomEvent('gemini-quota-exceeded', {
-          detail: { message: 'All AI providers have hit their quota. Please try again later or add a billing method.' },
+          detail: { message: 'All AI providers have hit their quota. Please try again later.' },
         }));
         throw new Error('QUOTA_EXCEEDED');
       }
@@ -154,7 +195,7 @@ async function callAI(prompt) {
     }
   }
 
-  throw new Error('No AI provider configured. Add VITE_GROQ_API_KEY to your .env file.');
+  throw new Error('No AI provider configured. Add VITE_KIMI_API_KEY to your .env file.');
 }
 
 // ─── Public wrapper (cache + queue) ──────────────────────────────────────────

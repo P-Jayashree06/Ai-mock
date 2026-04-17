@@ -53,7 +53,7 @@ export default function DashboardContent() {
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
             <h1 className="text-3xl font-display font-bold text-text-primary mb-2">
-              Welcome back, {user?.name || user?.email?.split('@')[0] || 'Guest'}!
+              Welcome back, {user?.name || 'User'}!
             </h1>
             <p className="text-text-secondary">Ready to crush your next interview? You've got this.</p>
           </div>

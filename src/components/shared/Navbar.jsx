@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, LayoutDashboard, FileVideo } from 'lucide-react';
+import { LogOut, LayoutDashboard, FileVideo, User } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 
 
@@ -37,6 +37,10 @@ export default function Navbar() {
               <Link to="/interview/setup" className="text-text-secondary hover:text-text-primary transition-colors flex items-center space-x-1">
                 <FileVideo className="w-4 h-4" />
                 <span className="hidden sm:inline text-sm font-medium">New Interview</span>
+              </Link>
+              <Link to="/profile" className="text-text-secondary hover:text-text-primary transition-colors flex items-center space-x-1">
+                <User className="w-4 h-4" />
+                <span className="hidden sm:inline text-sm font-medium">Profile</span>
               </Link>
               <div className="h-6 w-px bg-subtle"></div>
               <ThemeToggle />

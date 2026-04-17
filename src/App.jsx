@@ -15,6 +15,7 @@ const Round1Technical = lazy(() => import('./components/interview/Round1Technica
 const Round2TechnicalHR = lazy(() => import('./components/interview/Round2TechnicalHR'));
 const Round3PersonalHR = lazy(() => import('./components/interview/Round3PersonalHR'));
 const FeedbackPage = lazy(() => import('./components/feedback/FeedbackPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 
 function ProtectedRoute() {
   const user = authService.getSession();
@@ -37,7 +38,15 @@ function App() {
     <div className="min-h-screen bg-bg-primary text-text-primary font-body antialiased selection:bg-accent-primary selection:text-white pb-20 sm:pb-0">
       <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader /></div>}>
         <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/" element={
+            <Navigate 
+              to={(() => {
+                const mockUsers = JSON.parse(localStorage.getItem('interview_ai_mock_users') || '[]');
+                return mockUsers.length === 0 ? "/signup" : "/dashboard";
+              })()} 
+              replace 
+            />
+          } />
           
           <Route element={<PublicRoute />}>
             <Route path="/login" element={<LoginPage />} />
@@ -47,6 +56,7 @@ function App() {
 
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/interview/setup" element={<ResumeUpload />} />
             <Route path="/interview/round1" element={<Round1Technical />} />
             <Route path="/interview/round2" element={<Round2TechnicalHR />} />

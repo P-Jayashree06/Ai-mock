@@ -319,71 +319,75 @@ export default function Round1Technical() {
 
   return (
     <div className="h-screen flex flex-col md:flex-row bg-bg-primary overflow-hidden">
-      <div className="w-full md:w-[40%] flex flex-col border-r border-subtle relative bg-bg-secondary p-6 overflow-y-auto">
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-2">
-             <button 
-                onClick={() => navigate('/dashboard')} 
-                className="group flex items-center gap-1.5 px-3 py-1.5 bg-bg-primary hover:bg-glass rounded-lg border border-subtle text-text-muted hover:text-text-primary transition-all cursor-pointer text-xs font-medium"
-             >
-               <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
-               Back to Dashboard
-             </button>
-             <div className="px-3 py-1 bg-accent-primary/20 text-accent-primary text-[10px] font-bold rounded uppercase tracking-wider border border-accent-primary/20">
-               {question.type || 'technical'} · {question.difficulty}
-             </div>
-          </div>
-          <div className={`flex items-center space-x-2 px-3 py-1.5 rounded bg-bg-card border ${isTimeLow ? 'border-accent-red text-accent-red animate-pulse shadow-[0_0_10px_var(--accent-red)]' : 'border-subtle text-text-primary'}`}>
-            <Clock className="w-4 h-4" />
-            <span className="font-mono font-medium">{formatTime()}</span>
-          </div>
-        </div>
-
-        <h2 className="text-xl font-display font-bold text-text-primary mb-4 pr-10">
-          Question {currentQuestionIndex + 1}/{codingQuestions.length}: {question.title || 'Challenge'}
-        </h2>
-        
-        <div className="prose prose-invert prose-sm text-text-secondary whitespace-pre-wrap flex-grow pr-4">
-          {question.description}
-        </div>
-
-        {isTech && question.testCases && (
-          <div className="mt-8">
-            <h3 className="text-xs font-bold text-text-muted uppercase tracking-widest mb-4 flex items-center gap-2">
-              <Beaker className="w-3 h-3 text-accent-amber" /> Example Test Cases
-            </h3>
-            <div className="space-y-3">
-              {question.testCases.slice(0, 2).map((tc, idx) => (
-                <div key={idx} className="bg-black/30 rounded-xl p-4 border border-subtle/30">
-                  <div className="flex flex-col gap-3 text-[11px] font-mono">
-                    <div className="w-full">
-                      <span className="text-text-muted block mb-1 uppercase tracking-tighter text-[9px] opacity-70">Input</span>
-                      <code className="block w-full text-text-primary bg-bg-secondary/50 px-3 py-2 rounded-lg border border-subtle/20 overflow-x-auto whitespace-pre-wrap break-all scrollbar-hide">
-                        {tc.input}
-                      </code>
-                    </div>
-                    <div className="w-full">
-                      <span className="text-text-muted block mb-1 uppercase tracking-tighter text-[9px] opacity-70">Expected Output</span>
-                      <code className="block w-full text-accent-green bg-accent-green/5 px-3 py-2 rounded-lg border border-accent-green/10 overflow-x-auto whitespace-pre-wrap break-all scrollbar-hide">
-                        {tc.expected}
-                      </code>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {question.testCases.length > 2 && <p className="text-[10px] text-text-muted italic">+ {question.testCases.length - 2} more hidden test cases</p>}
+      <div className="w-full md:w-[40%] flex flex-col border-r border-subtle relative bg-bg-secondary h-full">
+        <div className="flex-grow p-6 overflow-y-auto scrollbar-hide">
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center gap-2">
+               <button 
+                  onClick={() => navigate('/dashboard')} 
+                  className="group flex items-center gap-1.5 px-3 py-1.5 bg-bg-primary hover:bg-glass rounded-lg border border-subtle text-text-muted hover:text-text-primary transition-all cursor-pointer text-xs font-medium"
+               >
+                 <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
+                 Back to Dashboard
+               </button>
+               <div className="px-3 py-1 bg-accent-primary/20 text-accent-primary text-[10px] font-bold rounded uppercase tracking-wider border border-accent-primary/20">
+                 {question.type || 'technical'} · {question.difficulty}
+               </div>
+            </div>
+            <div className={`flex items-center space-x-2 px-3 py-1.5 rounded bg-bg-card border ${isTimeLow ? 'border-accent-red text-accent-red animate-pulse shadow-[0_0_10px_var(--accent-red)]' : 'border-subtle text-text-primary'}`}>
+              <Clock className="w-4 h-4" />
+              <span className="font-mono font-medium">{formatTime()}</span>
             </div>
           </div>
-        )}
 
-        <div className="mt-8 pt-4 border-t border-subtle h-48 rounded-xl overflow-hidden shadow-glow bg-black relative">
-          <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover transform scale-x-[-1]" />
-          {isRecording && !isTech && (
-             <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md rounded-full px-4 py-1 flex items-center justify-center space-x-1">
-               <div className="w-2 h-2 bg-accent-red rounded-full animate-pulse" />
-               <span className="text-xs font-medium text-white">Recording...</span>
-             </div>
+          <h2 className="text-xl font-display font-bold text-text-primary mb-4 pr-10">
+            Question {currentQuestionIndex + 1}/{codingQuestions.length}: {question.title || 'Challenge'}
+          </h2>
+          
+          <div className="prose prose-invert prose-sm text-text-secondary whitespace-pre-wrap flex-grow pr-4">
+            {question.description}
+          </div>
+
+          {isTech && question.testCases && (
+            <div className="mt-8">
+              <h3 className="text-xs font-bold text-text-muted uppercase tracking-widest mb-4 flex items-center gap-2">
+                <Beaker className="w-3 h-3 text-accent-amber" /> Example Test Cases
+              </h3>
+              <div className="space-y-3">
+                {question.testCases.slice(0, 2).map((tc, idx) => (
+                  <div key={idx} className="bg-black/30 rounded-xl p-4 border border-subtle/30">
+                    <div className="flex flex-col gap-3 text-[11px] font-mono">
+                      <div className="w-full">
+                        <span className="text-text-muted block mb-1 uppercase tracking-tighter text-[9px] opacity-70">Input</span>
+                        <code className="block w-full text-text-primary bg-bg-secondary/50 px-3 py-2 rounded-lg border border-subtle/20 overflow-x-auto whitespace-pre-wrap break-all scrollbar-hide">
+                          {tc.input}
+                        </code>
+                      </div>
+                      <div className="w-full">
+                        <span className="text-text-muted block mb-1 uppercase tracking-tighter text-[9px] opacity-70">Expected Output</span>
+                        <code className="block w-full text-accent-green bg-accent-green/5 px-3 py-2 rounded-lg border border-accent-green/10 overflow-x-auto whitespace-pre-wrap break-all scrollbar-hide">
+                          {tc.expected}
+                        </code>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {question.testCases.length > 2 && <p className="text-[10px] text-text-muted italic">+ {question.testCases.length - 2} more hidden test cases</p>}
+              </div>
+            </div>
           )}
+        </div>
+
+        <div className="p-6 pt-0 mt-auto shrink-0 border-t border-subtle bg-bg-secondary">
+          <div className="mt-4 h-48 rounded-xl overflow-hidden shadow-glow bg-black relative">
+            <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover transform scale-x-[-1]" />
+            {isRecording && !isTech && (
+               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md rounded-full px-4 py-1 flex items-center justify-center space-x-1">
+                 <div className="w-2 h-2 bg-accent-red rounded-full animate-pulse" />
+                 <span className="text-xs font-medium text-white">Recording...</span>
+               </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -446,15 +450,24 @@ export default function Round1Technical() {
                 />
               </div>
               {runResult && (
-                <div className="flex-grow bg-[#1e1e1e] border-t border-[#333] p-4 overflow-y-auto min-h-0 scrollbar-hide">
+                <div className="flex-grow bg-[#1e1e1e] border-t border-[#333] p-4 overflow-y-auto min-h-0 custom-scrollbar">
                    <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2 text-sm font-bold text-accent-amber uppercase tracking-wider">
                         <Beaker className="w-4 h-4" /> Test Results
                       </div>
                       {runResult.testResults?.every(tr => tr.passed) && (
-                        <div className="flex items-center gap-2 px-3 py-1 bg-accent-green/20 text-accent-green rounded-full border border-accent-green/20 animate-bounce">
-                           <Trophy className="w-4 h-4" />
-                           <span className="text-xs font-bold uppercase tracking-tight">You finished this code!</span>
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2 px-3 py-1 bg-accent-green/20 text-accent-green rounded-full border border-accent-green/20">
+                             <Trophy className="w-4 h-4" />
+                             <span className="text-xs font-bold uppercase tracking-tight">You finished this code!</span>
+                          </div>
+                          <button 
+                            onClick={handleSubmit}
+                            disabled={isEvaluating}
+                            className="flex items-center gap-1.5 px-4 py-1 bg-accent-primary hover:bg-indigo-600 text-white rounded-full font-bold text-xs uppercase tracking-wide shadow-[0_0_15px_rgba(var(--accent-primary-rgb),0.5)] transition-all animate-pulse"
+                          >
+                            Submit to Proceed <ChevronRight className="w-4 h-4" />
+                          </button>
                         </div>
                       )}
                    </div>
@@ -496,6 +509,17 @@ export default function Round1Technical() {
                        </div>
                      ))}
                    </div>
+                   {!runResult.testResults?.every(tr => tr.passed) && (
+                     <div className="mt-4 pt-4 border-t border-[#333] flex justify-end">
+                       <button
+                         onClick={handleSubmit}
+                         disabled={isEvaluating}
+                         className="flex items-center gap-2 px-4 py-2 bg-[#252526] hover:bg-[#333] text-text-secondary hover:text-white rounded border border-[#444] transition-all text-sm font-medium shadow-sm hover:shadow-glow"
+                       >
+                         Submit Code Anyway <ChevronRight className="w-4 h-4" />
+                       </button>
+                     </div>
+                   )}
                 </div>
               )}
             </div>
@@ -537,58 +561,91 @@ export default function Round1Technical() {
 
           <AnimatePresence>
             {evalResult && (
-              <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: "spring", damping: 25, stiffness: 200 }} className="absolute inset-y-0 right-0 w-full sm:w-[500px] bg-bg-card border-l border-subtle shadow-2xl p-8 flex flex-col z-20 overflow-y-auto">
-                <div className="flex items-center justify-between mb-8">
-                  <div className="flex items-center gap-4">
+              <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: "spring", damping: 25, stiffness: 200 }} className="absolute inset-y-0 right-0 w-full sm:w-[500px] bg-bg-card border-l border-subtle shadow-2xl flex flex-col z-50">
+                
+                {/* Header - Fixed at Top */}
+                <div className="p-6 border-b border-subtle bg-bg-secondary flex items-center justify-between sticky top-0 z-10">
+                  <div className="flex items-center gap-3">
                     <button 
                       onClick={() => setEvalResult(null)}
-                      className="p-2 hover:bg-glass rounded-full transition-colors text-text-muted hover:text-text-primary"
+                      className="p-2 bg-bg-primary hover:bg-glass rounded-full transition-colors border border-subtle text-text-muted hover:text-text-primary shadow-sm"
                     >
-                      <ChevronLeft className="w-6 h-6" />
+                      <ChevronLeft className="w-5 h-5" />
                     </button>
-                    <h3 className="text-2xl font-display font-bold flex items-center gap-3">{evalResult.score >= 70 ? <CheckCircle className="text-accent-green w-8 h-8"/> : <XCircle className="text-accent-red w-8 h-8"/>} Evaluation</h3>
+                    <h3 className="text-xl font-display font-bold flex items-center gap-2">
+                       {evalResult.score >= 70 ? <CheckCircle className="text-accent-green w-6 h-6"/> : <XCircle className="text-accent-red w-6 h-6"/>} Result
+                    </h3>
                   </div>
-                  <div className="text-4xl font-mono font-bold text-accent-primary">{evalResult.score}%</div>
+                  
+                  <div className="flex items-center gap-4">
+                    <div className="text-2xl font-mono font-bold text-accent-primary">{evalResult.score}%</div>
+                    <button 
+                      onClick={handleNext} 
+                      className="px-4 py-2 bg-gradient-primary text-white rounded-lg font-bold flex items-center gap-1.5 hover:opacity-90 shadow-glow transition-all text-xs uppercase tracking-wide cursor-pointer"
+                    >
+                      {currentQuestionIndex < codingQuestions.length - 1 ? 'Next Que' : 'Finish'} <ChevronRight className="w-4 h-4"/>
+                    </button>
+                  </div>
                 </div>
-                <div className="space-y-6 flex-grow">
-                  {evalResult.timeComplexity && (
-                    <div>
-                      <p className="text-sm text-text-muted uppercase tracking-wider mb-2">Complexity</p>
-                      <div className="flex gap-4">
-                        <span className="px-3 py-1 bg-bg-secondary rounded font-mono text-sm border border-subtle">Time: <span className="text-accent-amber">{evalResult.timeComplexity}</span></span>
-                        <span className="px-3 py-1 bg-bg-secondary rounded font-mono text-sm border border-subtle">Space: <span className="text-accent-amber">{evalResult.spaceComplexity}</span></span>
+
+                {/* Scrollable Body */}
+                <div className="flex-grow overflow-y-auto p-6 md:p-8 custom-scrollbar pb-32">
+                  <div className="space-y-6">
+                    {evalResult.timeComplexity && (
+                      <div>
+                        <p className="text-sm text-text-muted uppercase tracking-wider mb-2">Complexity</p>
+                        <div className="flex gap-4">
+                          <span className="px-3 py-1 bg-bg-secondary rounded font-mono text-sm border border-subtle shadow-sm">Time: <span className="text-accent-amber">{evalResult.timeComplexity}</span></span>
+                          <span className="px-3 py-1 bg-bg-secondary rounded font-mono text-sm border border-subtle shadow-sm">Space: <span className="text-accent-amber">{evalResult.spaceComplexity}</span></span>
+                        </div>
                       </div>
+                    )}
+                    
+                    {evalResult.clarityScore !== undefined && (
+                      <div className="grid grid-cols-3 gap-2">
+                         <div className="bg-bg-secondary p-3 rounded-lg text-center border border-subtle shadow-sm"><span className="text-xs text-text-muted uppercase block">Clarity</span><span className="text-lg font-bold text-text-primary">{evalResult.clarityScore}%</span></div>
+                         <div className="bg-bg-secondary p-3 rounded-lg text-center border border-subtle shadow-sm"><span className="text-xs text-text-muted uppercase block">Confidence</span><span className="text-lg font-bold text-text-primary">{evalResult.confidenceScore}%</span></div>
+                         <div className="bg-bg-secondary p-3 rounded-lg text-center border border-subtle shadow-sm"><span className="text-xs text-text-muted uppercase block">Relevance</span><span className="text-lg font-bold text-text-primary">{evalResult.relevanceScore}%</span></div>
+                       </div>
+                    )}
+
+                    <div className="bg-bg-secondary p-5 rounded-xl border border-subtle shadow-sm relative overflow-hidden">
+                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent-primary"></div>
+                      <p className="text-sm text-text-muted uppercase tracking-wider mb-3">Feedback</p>
+                      <p className="text-text-primary leading-relaxed text-sm">{evalResult.feedback}</p>
                     </div>
-                  )}
-                  {evalResult.clarityScore !== undefined && (
-                    <div className="grid grid-cols-3 gap-2">
-                       <div className="bg-bg-secondary p-3 rounded-lg text-center border border-subtle"><span className="text-xs text-text-muted uppercase block">Clarity</span><span className="text-lg font-bold text-text-primary">{evalResult.clarityScore}%</span></div>
-                       <div className="bg-bg-secondary p-3 rounded-lg text-center border border-subtle"><span className="text-xs text-text-muted uppercase block">Confidence</span><span className="text-lg font-bold text-text-primary">{evalResult.confidenceScore}%</span></div>
-                       <div className="bg-bg-secondary p-3 rounded-lg text-center border border-subtle"><span className="text-xs text-text-muted uppercase block">Relevance</span><span className="text-lg font-bold text-text-primary">{evalResult.relevanceScore}%</span></div>
-                     </div>
-                  )}
-                  <div className="bg-bg-secondary p-5 rounded-xl border border-subtle">
-                    <p className="text-sm text-text-muted uppercase tracking-wider mb-3">Feedback</p>
-                    <p className="text-text-primary leading-relaxed">{evalResult.feedback}</p>
+                    
+                    {evalResult.improvements?.length > 0 && (
+                      <div className="bg-bg-primary/50 p-5 rounded-xl border border-subtle border-dashed">
+                        <p className="text-sm text-accent-amber uppercase tracking-wider mb-3 font-bold flex items-center gap-2">
+                           Improvements Areas
+                        </p>
+                        <ul className="list-disc pl-5 space-y-2">
+                          {evalResult.improvements.map((imp, i) => (
+                            <li key={i} className="text-sm text-text-secondary leading-relaxed">{imp}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
-                  {evalResult.improvements?.length > 0 && (
-                    <div>
-                      <p className="text-sm text-text-muted uppercase tracking-wider mb-2 pt-4">Improvements Areas</p>
-                      <ul className="list-disc pl-5 space-y-1.5">{evalResult.improvements.map((imp, i) => (<li key={i} className="text-sm text-text-secondary">{imp}</li>))}</ul>
-                    </div>
-                  )}
                 </div>
-                <div className="mt-8 pt-6 border-t border-subtle grid grid-cols-2 gap-4">
+
+                {/* Footer - Absolute Fixed at Bottom */}
+                <div className="absolute bottom-0 left-0 right-0 p-5 border-t border-subtle grid grid-cols-2 gap-4 bg-[#1e1e1e] shadow-[0_-10px_30px_rgba(0,0,0,0.5)] z-20">
                   <button 
                     onClick={() => setEvalResult(null)}
-                    className="py-4 bg-bg-secondary text-text-primary rounded-btn font-bold flex items-center justify-center gap-2 border border-subtle hover:bg-glass transition-all"
+                    className="py-3.5 bg-bg-secondary text-text-primary rounded-btn font-bold flex items-center justify-center gap-2 border border-subtle hover:bg-glass transition-all shadow-sm"
                   >
                     <ChevronLeft className="w-5 h-5"/> Review Code
                   </button>
-                  <button onClick={handleNext} className="py-4 bg-gradient-primary text-white rounded-btn font-bold flex items-center justify-center gap-2 hover:opacity-90 shadow-[0_0_20px_rgba(var(--accent-primary-rgb),0.3)] transition-all">
-                    {currentQuestionIndex < codingQuestions.length - 1 ? 'Next Question' : 'Complete Round 1'} <ChevronRight className="w-5 h-5"/>
+                  <button 
+                    onClick={handleNext} 
+                    className="py-3.5 bg-accent-primary text-white rounded-btn font-bold flex items-center justify-center gap-2 hover:bg-indigo-600 shadow-glow transition-all"
+                  >
+                    {currentQuestionIndex < codingQuestions.length - 1 ? 'Next Question' : 'Complete Round'} <ChevronRight className="w-5 h-5"/>
                   </button>
                 </div>
+
               </motion.div>
             )}
           </AnimatePresence>
