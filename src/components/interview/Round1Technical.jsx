@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Editor from '@monaco-editor/react';
-import { Mic, Type, Send, ChevronRight, ChevronLeft, CheckCircle, XCircle, Clock, Play, Beaker, Trophy, Award } from 'lucide-react';
+import { Mic, Type, Send, ChevronRight, ChevronLeft, CheckCircle, XCircle, Clock, Play, Beaker, Trophy, Award, Code2, Terminal } from 'lucide-react';
 import toast from 'react-hot-toast';
 import confetti from 'canvas-confetti';
 import useInterviewStore from '../../store/interviewStore';
@@ -44,6 +44,8 @@ export default function Round1Technical() {
   const [isRunning, setIsRunning] = useState(false);
   const [evalResult, setEvalResult] = useState(null);
   const [runResult, setRunResult] = useState(null);
+  const [runError, setRunError] = useState(null);
+  const [bottomTab, setBottomTab] = useState('testcases');
   const [showEvaluation, setShowEvaluation] = useState(false);
   const [isAnswered, setIsAnswered] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
@@ -171,6 +173,9 @@ export default function Round1Technical() {
     }
 
     setIsRunning(true);
+    setRunResult(null);
+    setRunError(null);
+    setBottomTab('result');
     try {
       const result = await evaluateCode(q.description, code, selectedLang);
       setRunResult(result);
@@ -189,6 +194,7 @@ export default function Round1Technical() {
         toast.error("Some test cases failed. Keep debugging!");
       }
     } catch (e) {
+      setRunError(e.response?.data?.error?.message || e.message || "Failed to execute code. An unknown error occurred.");
       toast.error("Failed to run code.");
     } finally {
       setIsRunning(false);
@@ -430,10 +436,11 @@ export default function Round1Technical() {
           </div>
         )}
 
-        <div className="flex-grow relative flex flex-col bg-bg-card">
+        <div className="flex-grow relative flex flex-col bg-bg-card overflow-hidden">
           {isTech ? (
             <div className="flex flex-col h-full overflow-hidden">
-              <div className={runResult ? "h-[55%]" : "h-full"}>
+              {/* Editor Area (Top 60%) */}
+              <div className="h-[60%] shrink-0">
                 <Editor
                   height="100%"
                   language={selectedLang}
@@ -449,79 +456,145 @@ export default function Round1Technical() {
                   }}
                 />
               </div>
-              {runResult && (
-                <div className="flex-grow bg-[#1e1e1e] border-t border-[#333] p-4 overflow-y-auto min-h-0 custom-scrollbar">
-                   <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2 text-sm font-bold text-accent-amber uppercase tracking-wider">
-                        <Beaker className="w-4 h-4" /> Test Results
-                      </div>
-                      {runResult.testResults?.every(tr => tr.passed) && (
-                        <div className="flex items-center gap-3">
-                          <div className="flex items-center gap-2 px-3 py-1 bg-accent-green/20 text-accent-green rounded-full border border-accent-green/20">
-                             <Trophy className="w-4 h-4" />
-                             <span className="text-xs font-bold uppercase tracking-tight">You finished this code!</span>
-                          </div>
-                          <button 
-                            onClick={handleSubmit}
-                            disabled={isEvaluating}
-                            className="flex items-center gap-1.5 px-4 py-1 bg-accent-primary hover:bg-indigo-600 text-white rounded-full font-bold text-xs uppercase tracking-wide shadow-[0_0_15px_rgba(var(--accent-primary-rgb),0.5)] transition-all animate-pulse"
-                          >
-                            Submit to Proceed <ChevronRight className="w-4 h-4" />
-                          </button>
-                        </div>
-                      )}
-                   </div>
-                   <div className="space-y-3">
-                     {runResult.testResults?.map((test, i) => (
-                       <div key={i} className={`p-3 bg-[#252526] rounded border transition-all ${test.passed ? 'border-accent-green/20' : 'border-accent-red/20'} flex flex-col gap-2`}>
-                         <div className="flex items-center justify-between">
-                            <span className="text-xs font-mono text-text-muted">Test Case {i+1}</span>
-                            {test.passed ? (
-                              <span className="flex items-center gap-1 text-[10px] font-bold text-accent-green uppercase tracking-tighter bg-accent-green/10 px-2 py-0.5 rounded">
-                                <CheckCircle className="w-3 h-3" /> Passed
-                              </span>
-                            ) : (
-                              <span className="flex items-center gap-1 text-[10px] font-bold text-accent-red uppercase tracking-tighter bg-accent-red/10 px-2 py-0.5 rounded">
-                                <XCircle className="w-3 h-3" /> Failed
-                              </span>
-                            )}
-                         </div>
-                         <div className="grid grid-cols-2 gap-4 text-xs font-mono">
-                           <div>
-                             <span className="text-text-muted block text-[10px] uppercase mb-1">Input</span>
-                             <pre className="bg-black/30 p-2 rounded whitespace-pre-wrap overflow-x-auto">{test.input}</pre>
-                           </div>
-                           <div>
-                             <span className="text-text-muted block text-[10px] uppercase mb-1">Expected Output</span>
-                             <pre className="bg-black/30 p-2 rounded whitespace-pre-wrap overflow-x-auto text-accent-green/80">{test.expected}</pre>
-                           </div>
-                         </div>
-                         {!test.passed && (
-                           <div className="mt-2 pt-2 border-t border-accent-red/10">
-                             <div className="flex items-center justify-between mb-1">
-                               <span className="text-accent-red block text-[10px] uppercase font-bold">Your Error Output</span>
-                             </div>
-                             <pre className="bg-rose-900/10 p-2 rounded text-rose-200 border border-rose-900/20 text-[11px] font-mono leading-relaxed whitespace-pre-wrap italic">
-                               {test.actual || "No output returned or execution error"}
-                             </pre>
-                           </div>
-                         )}
-                       </div>
-                     ))}
-                   </div>
-                   {!runResult.testResults?.every(tr => tr.passed) && (
-                     <div className="mt-4 pt-4 border-t border-[#333] flex justify-end">
-                       <button
-                         onClick={handleSubmit}
-                         disabled={isEvaluating}
-                         className="flex items-center gap-2 px-4 py-2 bg-[#252526] hover:bg-[#333] text-text-secondary hover:text-white rounded border border-[#444] transition-all text-sm font-medium shadow-sm hover:shadow-glow"
-                       >
-                         Submit Code Anyway <ChevronRight className="w-4 h-4" />
-                       </button>
-                     </div>
-                   )}
+              
+              {/* LeetCode-style Bottom Panel (Bottom 40%) */}
+              <div className="h-[40%] flex flex-col bg-[#1e1e1e] border-t border-[#333] overflow-hidden">
+                {/* Tabs Header */}
+                <div className="flex items-center gap-2 px-4 py-2 bg-[#252526] border-b border-[#333]">
+                  <button 
+                    onClick={() => setBottomTab('testcases')}
+                    className={`flex items-center gap-2 px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded transition-colors ${bottomTab === 'testcases' ? 'bg-[#333] text-white' : 'text-text-muted hover:text-text-primary'}`}
+                  >
+                    <Code2 className="w-4 h-4" /> Testcases
+                  </button>
+                  <button 
+                    onClick={() => setBottomTab('result')}
+                    className={`flex items-center gap-2 px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded transition-colors ${bottomTab === 'result' ? 'bg-[#333] text-white' : 'text-text-muted hover:text-text-primary'}`}
+                  >
+                    <Terminal className="w-4 h-4" /> Test Result
+                  </button>
                 </div>
-              )}
+                
+                {/* Tab Content */}
+                <div className="flex-grow overflow-y-auto p-4 custom-scrollbar min-h-0">
+                  {bottomTab === 'testcases' && question.testCases && (
+                    <div className="space-y-4">
+                      {question.testCases.map((tc, idx) => (
+                        <div key={idx} className="bg-black/30 rounded-xl p-4 border border-subtle/30">
+                          <div className="text-sm font-bold text-text-primary mb-3">Test Case {idx + 1}</div>
+                          <div className="flex flex-col gap-3 text-[12px] font-mono">
+                            <div className="w-full">
+                              <span className="text-text-muted block mb-1 uppercase tracking-tighter text-[10px] opacity-70">Input =</span>
+                              <code className="block w-full text-text-primary bg-bg-secondary/50 px-3 py-2 rounded border border-subtle/20 overflow-x-auto whitespace-pre-wrap break-all scrollbar-hide">
+                                {tc.input}
+                              </code>
+                            </div>
+                            <div className="w-full">
+                              <span className="text-text-muted block mb-1 uppercase tracking-tighter text-[10px] opacity-70">Expected Output =</span>
+                              <code className="block w-full text-text-primary bg-bg-secondary/50 px-3 py-2 rounded border border-subtle/20 overflow-x-auto whitespace-pre-wrap break-all scrollbar-hide">
+                                {tc.expected}
+                              </code>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {bottomTab === 'result' && !runResult && !runError && (
+                    <div className="flex flex-col items-center justify-center h-full text-text-muted opacity-50 gap-3">
+                       <Play className="w-10 h-10" />
+                       <p className="text-sm">Run your code to see results</p>
+                    </div>
+                  )}
+
+                  {bottomTab === 'result' && runError && (
+                    <div className="bg-rose-900/10 border border-rose-900/30 rounded-lg p-4">
+                      <h4 className="text-accent-red font-bold text-sm mb-2 flex items-center gap-2">
+                        <XCircle className="w-4 h-4" /> Execution Error
+                      </h4>
+                      <pre className="text-rose-200 text-xs font-mono whitespace-pre-wrap break-all">
+                        {runError}
+                      </pre>
+                    </div>
+                  )}
+
+                  {bottomTab === 'result' && runResult && (
+                    <div className="flex flex-col">
+                       <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-2 text-sm font-bold text-accent-amber uppercase tracking-wider">
+                            <Beaker className="w-4 h-4" /> Execution Results
+                          </div>
+                          {runResult.testResults?.every(tr => tr.passed) && (
+                            <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-2 px-3 py-1 bg-accent-green/20 text-accent-green rounded-full border border-accent-green/20">
+                                 <Trophy className="w-4 h-4" />
+                                 <span className="text-xs font-bold uppercase tracking-tight">You finished this code!</span>
+                              </div>
+                              <button 
+                                onClick={handleSubmit}
+                                disabled={isEvaluating}
+                                className="flex items-center gap-1.5 px-4 py-1 bg-accent-primary hover:bg-indigo-600 text-white rounded-full font-bold text-xs uppercase tracking-wide shadow-[0_0_15px_rgba(var(--accent-primary-rgb),0.5)] transition-all animate-pulse"
+                              >
+                                Submit to Proceed <ChevronRight className="w-4 h-4" />
+                              </button>
+                            </div>
+                          )}
+                       </div>
+                       
+                       <div className="space-y-4">
+                         {runResult.testResults?.map((test, i) => (
+                           <div key={i} className={`p-4 bg-[#252526] rounded-xl border transition-all ${test.passed ? 'border-accent-green/30 shadow-[0_0_10px_rgba(16,185,129,0.05)]' : 'border-accent-red/30 shadow-[0_0_10px_rgba(239,68,68,0.05)]'} flex flex-col gap-3`}>
+                             <div className="flex items-center justify-between">
+                                <span className="text-sm font-bold text-text-primary">Test Case {i+1}</span>
+                                {test.passed ? (
+                                  <span className="flex items-center gap-1.5 text-xs font-bold text-accent-green uppercase tracking-tighter bg-accent-green/10 px-2 py-1 rounded">
+                                    <CheckCircle className="w-4 h-4" /> Passed
+                                  </span>
+                                ) : (
+                                  <span className="flex items-center gap-1.5 text-xs font-bold text-accent-red uppercase tracking-tighter bg-accent-red/10 px-2 py-1 rounded">
+                                    <XCircle className="w-4 h-4" /> Failed
+                                  </span>
+                                )}
+                             </div>
+                             
+                             <div className="flex flex-col gap-3 text-[12px] font-mono">
+                               <div className="w-full">
+                                 <span className="text-text-muted block text-[10px] uppercase mb-1">Input =</span>
+                                 <pre className="bg-black/30 p-2.5 rounded whitespace-pre-wrap overflow-x-auto border border-subtle/20">{test.input}</pre>
+                               </div>
+                               <div className="w-full">
+                                 <span className="text-text-muted block text-[10px] uppercase mb-1">Expected Output =</span>
+                                 <pre className="bg-black/30 p-2.5 rounded whitespace-pre-wrap overflow-x-auto text-accent-green/80 border border-subtle/20">{test.expected}</pre>
+                               </div>
+                               {!test.passed && (
+                                 <div className="w-full mt-2 pt-2 border-t border-accent-red/10">
+                                   <span className="text-accent-red block text-[10px] uppercase font-bold mb-1">Actual Output / Error =</span>
+                                   <pre className="bg-rose-900/10 p-2.5 rounded text-rose-200 border border-rose-900/20 text-[12px] font-mono leading-relaxed whitespace-pre-wrap">
+                                     {test.actual || "No output returned or execution error"}
+                                   </pre>
+                                 </div>
+                               )}
+                             </div>
+                           </div>
+                         ))}
+                       </div>
+                       
+                       {!runResult.testResults?.every(tr => tr.passed) && (
+                         <div className="mt-6 pt-4 border-t border-[#333] flex justify-end">
+                           <button
+                             onClick={handleSubmit}
+                             disabled={isEvaluating}
+                             className="flex items-center gap-2 px-5 py-2.5 bg-[#252526] hover:bg-[#333] text-text-secondary hover:text-white rounded border border-[#444] transition-all text-sm font-medium shadow-sm hover:shadow-glow"
+                           >
+                             Submit Code Anyway <ChevronRight className="w-4 h-4" />
+                           </button>
+                         </div>
+                       )}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           ) : (
             <div className="flex-grow flex flex-col h-full bg-bg-primary">

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { db } from './instantdb';
 
-const BACKEND_URL = 'http://localhost:3001';
+const BACKEND_URL = import.meta.env.PROD ? '/api' : 'http://localhost:3001/api';
 
 export const authService = {
   getSession() {

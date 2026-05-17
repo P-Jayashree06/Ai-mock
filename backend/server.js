@@ -21,7 +21,7 @@ const db = init({
   adminToken: process.env.INSTANTDB_ADMIN_SECRET
 });
 
-app.post('/signup', async (req, res) => {
+app.post('/api/signup', async (req, res) => {
   try {
     const { email, password, name, instantUserId } = req.body;
     
@@ -50,7 +50,7 @@ app.post('/signup', async (req, res) => {
   }
 });
 
-app.post('/login', async (req, res) => {
+app.post('/api/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -97,7 +97,7 @@ app.post('/login', async (req, res) => {
   }
 });
 
-app.post('/login-otp', async (req, res) => {
+app.post('/api/login-otp', async (req, res) => {
   try {
     const { email, instantUserId, name: providedName } = req.body;
 
@@ -147,7 +147,7 @@ app.post('/login-otp', async (req, res) => {
   }
 });
 
-app.post('/reset-password', async (req, res) => {
+app.post('/api/reset-password', async (req, res) => {
   try {
     const { email, newPassword, instantUserId } = req.body;
 
@@ -174,7 +174,11 @@ app.post('/reset-password', async (req, res) => {
   }
 });
 
-const PORT = 3001;
-app.listen(PORT, () => {
-  console.log(`Node Backend Secure API running on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  const PORT = 3001;
+  app.listen(PORT, () => {
+    console.log(`Node Backend Secure API running on port ${PORT}`);
+  });
+}
+
+export default app;
