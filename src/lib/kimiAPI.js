@@ -212,8 +212,24 @@ async function callGeminiCached(prompt) {
 // ─── Exported API functions ───────────────────────────────────────────────────
 
 export async function analyzeResume(resumeText) {
-  const prompt = `Extract skills, programming languages, and experience level from this resume. Return ONLY a strict JSON object, no markdown.
+  const prompt = `You are an expert ATS Resume Analyzer. Extract skills, programming languages, experience level, and generate a comprehensive ATS score report based on this resume.
+CRITICAL: Evaluate the resume realistically. Do NOT just output the example numbers below. Calculate actual scores (0-100) and actual issue counts based on the quality, repetition, grammar, and impact shown in the resume text.
+Return ONLY a strict JSON object, no markdown.
+
 {
+  "atsScore": 82, // A realistic number from 0-100 based on overall quality
+  "issuesCount": 4, // Number of issues found
+  "metrics": {
+    "atsParseRate": { "score": 95, "issues": 0, "status": "Great!", "message": "Successfully parsed text." },
+    "quantifyingImpact": { "score": 70, "issues": 2, "status": "Needs Improvement", "message": "Try to include more measurable results." },
+    "repetition": { "score": 85, "issues": 1, "status": "Good", "message": "Some repeated phrases." },
+    "spellingAndGrammar": { "score": 90, "issues": 1, "status": "Review Needed", "message": "Found a few potential grammatical issues." }
+  },
+  "categories": {
+    "sections": 100,
+    "atsEssentials": 80,
+    "tailoring": 75
+  },
   "skills": ["string"],
   "programmingLanguages": ["string"],
   "projects": [{"name": "string", "description": "string"}],
